@@ -33,8 +33,11 @@ ifeq ($(UNAME), Linux)
 endif
 
 # Make variables
-AR = ar rcs
 CFLAGS = -Wall -Wextra -Werror -MD -g3 
+CPPFLAGS = -I inc -I libft/inc -I ~/.brew/opt/readline/include \
+	-I /usr/local/opt/readline/include
+LDFLAGS = -L ~/.brew/opt/readline/lib -L /usr/local/opt/readline/lib
+LDLIBS = -lreadline
 RM = rm -f
 CC = gcc
 PRINTF = printf
@@ -55,8 +58,6 @@ SRC = main.c builtins.c ft_strtrim_all.c exec.c			\
 
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
 
-OBJ_LFT = $(addprefix $(OBJ_LFT_DIR)/, $(SRC_LFT:.c=.o))
-
 # Progress vars
 SRC_COUNT_TOT := $(shell expr $(shell echo -n $(SRC) | wc -w) - $(shell ls -l $(OBJ_DIR) 2>&1 | grep ".o" | wc -l) + 1)
 ifeq ($(shell test $(SRC_COUNT_TOT) -le 0; echo $$?),0)
@@ -68,17 +69,16 @@ SRC_PCT = $(shell expr 100 \* $(SRC_COUNT) / $(SRC_COUNT_TOT))
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ) | $(BIN_DIR)
-	@$(CC) -L /usr/local/opt/readline/lib -I /usr/local/opt/readline/include -L ~/.brew/opt/readline/lib -I ~/.brew/opt/readline/include $(CFLAGS) $(CDEBUG) $(OBJ) $(LIBFT) -lreadline -o $@
+	@$(CC) $(LDFLAGS) $(CFLAGS) $(CDEBUG) $(OBJ) $(LIBFT) $(LDLIBS) -o $@
 	@$(PRINTF) "\r%100s\r$(GREEN)$(BIN) is up to date!$(DEFAULT)\n"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@$(eval SRC_COUNT = $(shell expr $(SRC_COUNT) + 1))
 	@$(PRINTF) "\r%100s\r[ %d/%d (%d%%) ] Compiling $(BLUE)$<$(DEFAULT)..." "" $(SRC_COUNT) $(SRC_COUNT_TOT) $(SRC_PCT)
-	@$(CC) -I ~/.brew/opt/readline/include -I /usr/local/opt/readline/include $(CFLAGS) $(CDEBUG) -c $< -o $@
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(CDEBUG) -c $< -o $@
 
 $(LIBFT): $(LIBFT_SRC) | $(LIBFT_DIR) $(BIN_DIR)
-	@make all -C libft
-	@$(AR) $(NAME) $(LIBFT)
+	@$(MAKE) all -C libft
 
 compare: all
 	@cd tests && ./compare.sh && cd ..
@@ -90,8 +90,8 @@ run: all
 	@$(LEAKS)./$(NAME)
 
 clean: | $(LIBFT_DIR)
-	@$(PRINTF) "$(CYAN)Cleaning up object files in $(NAME)...$(DEFAULT)\n"
-	@make clean -C libft
+	@$(PRINTF) "$(CYAN)Cleaning up object files...$(DEFAULT)\n"
+	@$(MAKE) clean -C libft
 	@$(RM) -r $(OBJ_DIR)
 
 fclean: clean
@@ -102,21 +102,17 @@ fclean: clean
 
 norminette: | $(LIBFT_DIR)
 	@$(PRINTF) "$(CYAN)\nChecking norm for $(BIN)...$(DEFAULT)\n"
-	@norminette -R CheckForbiddenSourceHeader $(SRC_DIR) $(INC_DIR)
-	@make norminette -C libft
+	@norminette -R CheckForbiddenSourceHeader $(SRC_DIR) inc
+	@$(MAKE) norminette -C libft
 
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
-$(OBJB_DIR):
-	@mkdir -p $(OBJB_DIR)
-
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
 
-re: fclean
-	@make all
+re: fclean all
 
 git:
 	git add .
@@ -124,6 +120,5 @@ git:
 	git push
 
 -include $(OBJ_DIR)/*.d
--include $(OBJB_DIR)/*.d
 
 .PHONY: all clean fclean norminette test compare run git re
