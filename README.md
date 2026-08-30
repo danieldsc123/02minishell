@@ -1,114 +1,101 @@
 # 🐚 Minishell — 42SP
 
-Implementação de um **shell Unix simplificado**, inspirado no comportamento do Bash.
+Uma implementação de um shell Unix simplificado, inspirada no comportamento do
+Bash e desenvolvida em C como parte da formação da 42 São Paulo.
 
-Este projeto tem como objetivo aprofundar o conhecimento sobre **sistemas operacionais**, **processos**, **pipes**, **sinais** e **execução de comandos**, utilizando exclusivamente a linguagem C.
+O projeto explora conceitos fundamentais de sistemas operacionais, como criação
+de processos, pipes, redirecionamentos, sinais e variáveis de ambiente.
 
----
+## Funcionalidades
 
-## 🎯 Objetivo
+- Execução de comandos por caminho absoluto, relativo ou pelo `PATH`
+- Pipes (`|`)
+- Redirecionamentos de entrada e saída (`<`, `>`, `>>`)
+- Heredoc (`<<`)
+- Expansão de variáveis de ambiente e do status de saída (`$?`)
+- Tratamento de aspas simples e duplas
+- Histórico de comandos com Readline
+- Tratamento dos sinais `Ctrl-C`, `Ctrl-D` e `Ctrl-\\`
 
-Recriar as funcionalidades essenciais de um shell real, permitindo ao usuário:
+### Built-ins
 
-- executar comandos do sistema
-- utilizar pipes (`|`)
-- realizar redirecionamentos de entrada e saída
-- manipular variáveis de ambiente
-- interagir com sinais do sistema
+- `echo` com a opção `-n`
+- `cd`
+- `pwd`
+- `export`
+- `unset`
+- `env`
+- `exit`
 
----
+## Requisitos
 
-## 🧠 Conceitos Trabalhados
+- Sistema Unix ou Linux
+- GCC
+- GNU Make
+- Biblioteca de desenvolvimento Readline
 
-- Processos (`fork`)
-- Execução de programas (`execve`)
-- Pipes
-- Redirecionamentos (`<`, `>`, `>>`)
-- Parsing de comandos
-- Manipulação de sinais:
-  - `Ctrl + C`
-  - `Ctrl + D`
-  - `Ctrl + \`
-- Variáveis de ambiente
-- Gerenciamento de memória
-- Arquitetura de shell
+No Ubuntu ou Debian, instale a Readline com:
 
----
+```bash
+sudo apt install libreadline-dev
+```
 
-## ⚙️ Compilação
+No macOS com Homebrew:
+
+```bash
+brew install readline
+```
+
+## Compilação e execução
 
 ```bash
 make
+./bin/minishell
+```
 
- Gera o executável:
-./minishell
+Para remover os arquivos gerados durante a compilação:
 
-▶️ Execução
-./minishell
+```bash
+make fclean
+```
 
+Para recompilar todo o projeto:
 
+```bash
+make re
+```
 
-🛠️ Funcionalidades Implementadas
-Comandos
+## Exemplos de uso
 
-Execução de comandos com caminho absoluto ou relativo
-
-Busca automática no PATH
-
-Builtins
-
-echo
-
-cd
-
-pwd
-
-export
-
-unset
-
-env
-
-exit
-
-Operadores
-
-Pipes (|)
-
-Redirecionamento de entrada (<)
-
-Redirecionamento de saída (>)
-
-Redirecionamento em modo append (>>)
-
-Sinais
-
-Ctrl + C → nova linha
-
-Ctrl + D → encerra o shell
-
-Ctrl + \ → ignorado
-
-
-
-
-🧪 Exemplos de uso
-
+```bash
 ls -l | grep minishell
-
 cat input.txt | wc -l > output.txt
+export PATH="$PATH:/meu/comando"
+echo "$USER"
+```
 
-export PATH=$PATH:/meu/comando
+## Estrutura do projeto
 
+```text
+.
+├── inc/       # Cabeçalhos do Minishell
+├── libft/     # Biblioteca de funções auxiliares
+├── src/       # Código-fonte do shell
+├── tests/     # Scripts auxiliares de teste
+├── Makefile
+└── README.md
+```
 
-🛠️ Tecnologias
+## Conceitos praticados
 
-Linguagem C
+- `fork`, `execve` e espera de processos
+- Comunicação entre processos com pipes
+- Manipulação de descritores de arquivos
+- Parsing e expansão de comandos
+- Tratamento de sinais
+- Gerenciamento de memória
 
-Unix / Linux
+## Autor
 
-Makefile
-
-Readline
-
-Norminette
+Desenvolvido por [danieldsc123](https://github.com/danieldsc123) durante a
+formação na [42 São Paulo](https://www.42sp.org.br/).

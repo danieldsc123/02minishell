@@ -1,0 +1,21 @@
+# Build artifacts
+/bin/
+/obj/
+/libft/bin/
+/libft/obj/
+/libft/obja/
+/libft/objb/
+
+# Dependency files
+*.d
+
+# Test output
+/tests/test1
+/tests/test2
+
+# Editor and operating-system files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
